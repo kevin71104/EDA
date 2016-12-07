@@ -1,0 +1,7 @@
+eda16109
+Cyes3Kno
+ssh eda16109@edaunion.ee.ntu.edu.tw -p 40063
+sftp -P 40063 eda16109@edaunion.ee.ntu.edu.tw
+lls //local ls
+lcd //local cd
+put&get
