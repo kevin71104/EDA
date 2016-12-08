@@ -8,6 +8,12 @@
 
 using namespace std;
 
+class Interval;
+class Router;
+
+typedef vector<Interval*>		IntervalList;
+typedef vector<unsigned>		IdList;
+
 class Interval
 {
 public:
@@ -20,9 +26,10 @@ public:
     void setEnd(size_t Time) { if( Time > endTime) endTime = Time; }
     void setID(size_t ID) { intervalID = ID;}
     void setTrack(size_t num) { trackNum = num;}
+    void setDone() { done = true;}
     void addPriorNode(Interval* priorNode) {priorList.push_back(priorNode);}
     void update() {
-        ready =true;
+        ready = true;
         for(size_t i=0;i<priorList.size();i++)
             if(!priorList[i]->isDone()){
                 ready = false;
@@ -52,13 +59,13 @@ public:
     void printInterval() const;
 
 private:
-    bool                    ready;
-    bool                    done;
+    mutable bool            ready;
+    mutable bool            done;
     size_t                  intervalID;
     size_t                  trackNum;
     size_t                  startTime;
     size_t                  endTime;
-    vector< Interval* >     priorList;
+    IntervalList            priorList;
 };
 
 //functional object
@@ -69,23 +76,11 @@ struct less_start
    }
 };
 
-/*struct less_ID
-{
-    bool operator() (const Interval* I1, const Interval* I2) const{
-        return (I1->getID() < I2->getID());
-    }
-};*/
-
 class Router
 {
 public:
     Router():watermark(0){}
-
-    bool readNet(const string& filename) ;
-    void resetList() {
-        for(size_t i=0; i < intervalList.size(); i++)
-            delete intervalList[i];
-    }
+    ~Router(){ resetList();}
 
     //reporting functions
     void printTrack() const;
@@ -99,15 +94,22 @@ public:
                 return intervalList[i];
     }
 
-    void sortStartTime(){ ::sort(intervalList.begin(), intervalList.end(), less_start());}
+    bool readNet(const string& filename) ;
     void writeTrack(ostream& outfile) const;
+    void routing();
+    void sortStartTime(){ ::sort(intervalList.begin(), intervalList.end(), less_start());}
+    void resetList() {
+        for(size_t i=0; i < intervalList.size(); i++)
+            delete intervalList[i];
+    }
+    bool getTrack(IntervalList& list, IdList& track, size_t trackNum);
 
-    vector< Interval* >         intervalList;
 private:
-    size_t                      watermark;
-    vector< size_t >            upper;
-    vector< size_t >            bottom;
-    vector< vector<size_t> >    trackList;
+    size_t              watermark;
+    IdList              upper;
+    IdList              bottom;
+    IntervalList        intervalList;
+    vector<IdList>      trackList;
 };
 
 #endif

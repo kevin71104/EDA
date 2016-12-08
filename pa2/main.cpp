@@ -46,16 +46,16 @@ int main(int argc, char** argv)
 {
     // 3 description argv[0]:exe name; argv[1]:i/p file; argv[2]:o/p file
     if (argc == 3) {
-        cout << argv[0] <<'\n';
         if (!router->readNet(argv[1])) {
         cerr << "Error: cannot open file \"" << argv[1] << "\"!!\n";
         myexit();
         }
-        /*router->printTrack();
-        ofstream outfile(argv[2], ios::out);
+        router->printNet();
+        router->routing();
+        router->printTrack();
+        /*ofstream outfile(argv[2], ios::out);
         router->writeTrack(outfile);
         router->printChannelRouting();*/
-        router->printNet();
         exit(EXIT_SUCCESS);
     }
     else myexit();

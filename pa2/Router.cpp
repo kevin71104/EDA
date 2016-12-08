@@ -27,7 +27,8 @@ myStr2UInt(const string& str, unsigned& num)
 
 void
 Interval::printInterval() const{
-    cout << setw(4) << intervalID << " : " << startTime << ' ' << endTime << '\n';
+    cout << setw(4) << intervalID << " : " << startTime << ' ' << endTime << ' '
+         << trackNum << ' ' << ready << ' ' << done << '\n';
     if(priorList.empty()) return;
     cout << setw(7) << ' ' << intervalID <<"'s priorNodes are:";
     for(size_t i=0; i<priorList.size(); i++)
@@ -108,16 +109,53 @@ Router::readNet(const string& filename)
         TIME++;
         ss >> temp;
     }
+    //sort the intervalList by startTime
     sortStartTime();
     return true;
 }
 
 void
+Router::routing()
+{
+    vector<Interval*> list = intervalList;
+    size_t trackNum = 0;
+    while(!list.empty()){
+        trackNum++;
+        watermark = 0;
+        IdList track;
+        while(getTrack(list,track,trackNum)){
+            printNet();
+            for(size_t i=0; i<list.size(); i++)
+                list[i]->update();
+        }
+        trackList.push_back(track);
+    }
+}
+
+bool
+Router::getTrack(IntervalList& list, IdList& track, size_t trackNum)
+{
+    //cout << trackNum << ' ';
+    bool flag = false;
+    for(size_t i=0; i<list.size(); i++)
+        if( list[i]->isReady() && (list[i]->getStart() > watermark) ){
+            flag = true;
+            list[i]->setTrack(trackNum);
+            list[i]->setDone();
+            watermark = list[i]->getEnd();
+            track.push_back(list[i]->getID());
+            list.erase( list.begin()+i );
+            break;
+        }
+    return flag;
+}
+
+void
 Router::printTrack() const
-{   //cout<<123;
+{
     for(size_t i=0; i<trackList.size(); i++){
         if(i != 0) cout << '\n';
-        cout << "track" << i << ':' ;
+        cout << "track" << i+1 << ':' ;
         for(size_t j=0; j<trackList[i].size(); j++)
             cout << " i" << trackList[i][j] ;
     }
@@ -142,6 +180,7 @@ Router::writeTrack(ostream& outfile) const
 void
 Router::printNet() const
 {
+    cout << "print net\n";
     for(size_t i=0; i<upper.size(); i++){
         if(i == 0)cout << upper[i];
         else cout << ' ' << upper[i];
@@ -151,7 +190,7 @@ Router::printNet() const
         if(i == 0)cout << bottom[i];
         else cout << ' ' << bottom[i];
     }
-    cout << '\n';
+    cout << "\nprint interval... ID: start end tracknum ready done\n";
     for(size_t i=0; i<intervalList.size(); i++){
         intervalList[i]->printInterval();
     }
