@@ -2,19 +2,21 @@
 #adding @ will not show on the monitor
 # $@: represent target
 # $<: represent first dependency
-CC = gcc
+
+CC = g++
 CFLAGS = -O3
 TARGET = constraint_LEA
-SRC = main.cpp router.cpp
+SRC = main.cpp Router.cpp
 OBJS = $(SRC:.cpp=.o)
+
 
 ${TARGET}: ${OBJS}
 	${CC} ${CFLAGS} ${OBJS} -o $@
-	echo "compilation cuccess..."
-%.o: %.cpp
+	echo "compilation success..."
+%.o: %.cpp Router.h
 	${CC} ${CFLAGS} -c $< -o $@
 
 
-.PHONY:clean:
+.PHONY:clean
 clean:
-	@rm -f
+	@rm -f ${OBIS} ${TARGET}

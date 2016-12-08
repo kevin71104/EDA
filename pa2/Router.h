@@ -1,6 +1,9 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 
+#include <vector>
+#include <string>
+
 using namespace std;
 
 class Interval
@@ -14,17 +17,17 @@ public:
     size_t getEnd(){ return endTime;}
 
     //setting functions
-    addOverlap(size_t Id) {overlap.push_back(Id);}
-    addPriorNode(size_t Id) {priorNode.push_back(Id);}
+    void addOverlap(size_t Id) {overlap.push_back(Id);}
+    void addPriorNode(size_t Id) {priorNode.push_back(Id);}
 
 private:
     size_t           intervalID;
     size_t           trackNum;
     size_t           startTime;
     size_t           endTime;
-    vector<size_t>   overlap;
-    vector<size_t>   priorNode;
-}
+    vector< size_t >   overlap;
+    vector< size_t >   priorNode;
+};
 
 class Router
 {
@@ -33,8 +36,8 @@ public:
     void writeTrack(ostream& outfile);
 private:
     size_t watermark;
-    vector<Interval*>       IntervalList;
-    vector<vector<int>>     trackList;
-}
+    vector< Interval* >       IntervalList;
+    vector< vector<int> >     trackList;
+};
 
 #endif
