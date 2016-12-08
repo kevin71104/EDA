@@ -28,9 +28,12 @@ myStr2UInt(const string& str, unsigned& num)
 void
 Interval::printInterval() const{
     cout << setw(4) << intervalID << " : " << startTime << ' ' << endTime << ' '
-         << trackNum << ' ' << ready << ' ' << done << '\n';
-    if(priorList.empty()) return;
-    cout << setw(7) << ' ' << intervalID <<"'s priorNodes are:";
+         << trackNum << ' ' << ready << ' ' << done ;
+    if(priorList.empty()){
+        cout << '\n';
+        return;
+     }
+    cout << " priorNodes are:";
     for(size_t i=0; i<priorList.size(); i++)
         cout << ' ' << priorList[i]->getID();
     cout << '\n';
@@ -74,6 +77,7 @@ Router::readNet(const string& filename)
         TIME++;
         ss >> temp;
     }
+    size_t num_upper = intervalList.size();
 
     //reset
     ss.clear();
@@ -110,7 +114,9 @@ Router::readNet(const string& filename)
         ss >> temp;
     }
     //sort the intervalList by startTime
-    sortStartTime();
+    //intervals defined by upper-boundary and the new intervals defined by bottom respectively
+    ::sort(intervalList.begin(), intervalList.begin()+num_upper-1, less_start());
+    ::sort(intervalList.begin()+num_upper, intervalList.end(), less_start());
     //update the ready & done of the nodes with no priorNodes
     for(size_t i=0; i<intervalList.size(); i++)
         intervalList[i]->update();
@@ -127,7 +133,6 @@ Router::routing()
         watermark = 0;
         IdList track;
         while(getTrack(list,track,trackNum)){
-            printNet();
             for(size_t i=0; i<list.size(); i++)
                 list[i]->update();
         }
@@ -138,7 +143,6 @@ Router::routing()
 bool
 Router::getTrack(IntervalList& list, IdList& track, size_t trackNum)
 {
-    //cout << trackNum << ' ';
     bool flag = false;
     for(size_t i=0; i<list.size(); i++)
         if( list[i]->isReady())
