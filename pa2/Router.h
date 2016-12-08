@@ -3,31 +3,72 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <climits>
 
 using namespace std;
 
 class Interval
 {
 public:
-    Interval(size_t start,size_t end):startTime(start), endTime(end){}
+    Interval(size_t start = UINT_MAX,size_t end = 0)
+        :ready(false), done(false), startTime(start), endTime(end){}
     ~Interval(){}
 
-    //access functions
-    size_t getStart(){ return startTime;}
-    size_t getEnd(){ return endTime;}
-
     //setting functions
-    void addOverlap(size_t Id) {overlap.push_back(Id);}
+    void setStart(size_t Time) {
+        if(Time < startTime)
+            startTime = Time;
+    }
+    void setEnd(size_t Time) {
+        if( Time > endTime)
+            endTime = Time;
+    }
+    void setID(size_t ID) { intervalID = ID;}
+    void setTrack(size_t num) { trackNum = num;}
     void addPriorNode(size_t Id) {priorNode.push_back(Id);}
 
+    //access functions
+    size_t getStart() const{ return startTime;}
+    size_t getEnd() const{ return endTime;}
+    size_t getID() const { return intervalID;}
+    bool priorOrnot(size_t ID) const {
+        bool flag =false;
+        for(size_t i=0;i<priorNode.size();i++)
+            if(priorNode[i] == ID){
+                flag = true;
+                break;
+            }
+        return flag;
+    }
+
+    //reporting functions
+    void printInterval() const;
+
 private:
+    bool                ready;
+    bool                done;
     size_t              intervalID;
     size_t              trackNum;
     size_t              startTime;
     size_t              endTime;
-    vector< size_t >    overlap;
     vector< size_t >    priorNode;
 };
+
+//functional object
+struct less_start
+{
+   bool operator() (const Interval* I1, const Interval* I2) const{
+       return (I1->getStart() < I2->getStart());
+   }
+};
+
+/*struct less_ID
+{
+    bool operator() (const Interval* I1, const Interval* I2) const{
+        return (I1->getID() < I2->getID());
+    }
+};*/
 
 class Router
 {
@@ -43,12 +84,24 @@ public:
     //reporting functions
     void printTrack() const;
     void printChannelRouting() const;
+    void printNet() const;
 
+    //access functions
+    Interval* getInterval(size_t ID) const{
+        for(size_t i=0; i<intervalList.size(); i++)
+            if(ID == intervalList[i]->getID())
+                return intervalList[i];
+    }
+
+    void sortStartTime(){ ::sort(intervalList.begin(), intervalList.end(), less_start());}
     void writeTrack(ostream& outfile) const;
+
+    vector< Interval* >         intervalList;
 private:
-    size_t                    watermark;
-    vector< Interval* >       intervalList;
-    vector< vector<int> >     trackList;
+    size_t                      watermark;
+    vector< size_t >            upper;
+    vector< size_t >            bottom;
+    vector< vector<size_t> >    trackList;
 };
 
 #endif

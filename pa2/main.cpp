@@ -50,9 +50,11 @@ int main(int argc, char** argv)
           cerr << "Error: cannot open file \"" << argv[1] << "\"!!\n";
           myexit();
        }
-       router->printTrack();
+       /*router->printTrack();
        ofstream outfile(argv[2], ios::out);
-       //router->writeTrack(outfile);
+       router->writeTrack(outfile);
+       router->printChannelRouting();*/
+       router->printNet();
        exit(EXIT_SUCCESS);
     }
     else myexit();
