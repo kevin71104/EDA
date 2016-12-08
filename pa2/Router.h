@@ -30,6 +30,8 @@ public:
     void addPriorNode(Interval* priorNode) {priorList.push_back(priorNode);}
     void update() {
         ready = true;
+        if(priorList.empty())
+            return;
         for(size_t i=0;i<priorList.size();i++)
             if(!priorList[i]->isDone()){
                 ready = false;

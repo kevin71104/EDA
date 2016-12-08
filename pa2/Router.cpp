@@ -111,6 +111,9 @@ Router::readNet(const string& filename)
     }
     //sort the intervalList by startTime
     sortStartTime();
+    //update the ready & done of the nodes with no priorNodes
+    for(size_t i=0; i<intervalList.size(); i++)
+        intervalList[i]->update();
     return true;
 }
 
@@ -138,15 +141,16 @@ Router::getTrack(IntervalList& list, IdList& track, size_t trackNum)
     //cout << trackNum << ' ';
     bool flag = false;
     for(size_t i=0; i<list.size(); i++)
-        if( list[i]->isReady() && (list[i]->getStart() > watermark) ){
-            flag = true;
-            list[i]->setTrack(trackNum);
-            list[i]->setDone();
-            watermark = list[i]->getEnd();
-            track.push_back(list[i]->getID());
-            list.erase( list.begin()+i );
-            break;
-        }
+        if( list[i]->isReady())
+            if( watermark == 0 || (list[i]->getStart() > watermark) ){
+                flag = true;
+                list[i]->setTrack(trackNum);
+                list[i]->setDone();
+                watermark = list[i]->getEnd();
+                track.push_back(list[i]->getID());
+                list.erase( list.begin()+i );
+                break;
+            }
     return flag;
 }
 
@@ -159,6 +163,7 @@ Router::printTrack() const
         for(size_t j=0; j<trackList[i].size(); j++)
             cout << " i" << trackList[i][j] ;
     }
+    cout << '\n';
 }
 void
 Router::printChannelRouting() const
