@@ -28,10 +28,10 @@ myStr2UInt(const string& str, unsigned& num)
 void
 Interval::printInterval() const{
     cout << setw(4) << intervalID << " : " << startTime << ' ' << endTime << '\n';
-    if(priorNode.empty()) return;
+    if(priorList.empty()) return;
     cout << setw(7) << ' ' << intervalID <<"'s priorNodes are:";
-    for(size_t i=0; i<priorNode.size(); i++)
-        cout << ' ' << priorNode[i];
+    for(size_t i=0; i<priorList.size(); i++)
+        cout << ' ' << priorList[i]->getID();
     cout << '\n';
 }
 
@@ -52,7 +52,6 @@ Router::readNet(const string& filename)
     ss << line;
     ss >> temp;
     while( !ss.eof() ){
-
         myStr2UInt(temp,num);
         upper.push_back(num);
         if(num != 0){
@@ -104,7 +103,7 @@ Router::readNet(const string& filename)
                 intervalList.push_back(tempNode);
             }
             if(upper[TIME] != 0 && !tempNode->priorOrnot(upper[TIME]) )
-                tempNode->addPriorNode(upper[TIME]);
+                tempNode->addPriorNode( getInterval(upper[TIME]) );
         }
         TIME++;
         ss >> temp;

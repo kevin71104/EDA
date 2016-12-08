@@ -13,7 +13,7 @@ Router* router = new Router();
 static void
 usage()
 {
-   cout << "Usage: constraint_LEA [ -File < doFile > ]" << endl;
+   cout << "Usage: constraint_LEA < inputFile > < outputFile > " << endl;
 }
 
 static void
@@ -44,18 +44,19 @@ myStrNCmp(const string& s1, const string& s2, unsigned n)
 
 int main(int argc, char** argv)
 {
-    // -File <doFile>
+    // 3 description argv[0]:exe name; argv[1]:i/p file; argv[2]:o/p file
     if (argc == 3) {
-       if (!router->readNet(argv[1])) {
-          cerr << "Error: cannot open file \"" << argv[1] << "\"!!\n";
-          myexit();
-       }
-       /*router->printTrack();
-       ofstream outfile(argv[2], ios::out);
-       router->writeTrack(outfile);
-       router->printChannelRouting();*/
-       router->printNet();
-       exit(EXIT_SUCCESS);
+        cout << argv[0] <<'\n';
+        if (!router->readNet(argv[1])) {
+        cerr << "Error: cannot open file \"" << argv[1] << "\"!!\n";
+        myexit();
+        }
+        /*router->printTrack();
+        ofstream outfile(argv[2], ios::out);
+        router->writeTrack(outfile);
+        router->printChannelRouting();*/
+        router->printNet();
+        exit(EXIT_SUCCESS);
     }
     else myexit();
 }

@@ -16,26 +16,32 @@ public:
     ~Interval(){}
 
     //setting functions
-    void setStart(size_t Time) {
-        if(Time < startTime)
-            startTime = Time;
-    }
-    void setEnd(size_t Time) {
-        if( Time > endTime)
-            endTime = Time;
-    }
+    void setStart(size_t Time) { if(Time < startTime) startTime = Time; }
+    void setEnd(size_t Time) { if( Time > endTime) endTime = Time; }
     void setID(size_t ID) { intervalID = ID;}
     void setTrack(size_t num) { trackNum = num;}
-    void addPriorNode(size_t Id) {priorNode.push_back(Id);}
+    void addPriorNode(Interval* priorNode) {priorList.push_back(priorNode);}
+    void update() {
+        ready =true;
+        for(size_t i=0;i<priorList.size();i++)
+            if(!priorList[i]->isDone()){
+                ready = false;
+                break;
+        }
+    }
 
     //access functions
     size_t getStart() const{ return startTime;}
     size_t getEnd() const{ return endTime;}
     size_t getID() const { return intervalID;}
+
+    //bool functions
+    bool isReady() const { return ready;}
+    bool isDone() const { return done;}
     bool priorOrnot(size_t ID) const {
         bool flag =false;
-        for(size_t i=0;i<priorNode.size();i++)
-            if(priorNode[i] == ID){
+        for(size_t i=0;i<priorList.size();i++)
+            if(priorList[i]->getID() == ID){
                 flag = true;
                 break;
             }
@@ -46,13 +52,13 @@ public:
     void printInterval() const;
 
 private:
-    bool                ready;
-    bool                done;
-    size_t              intervalID;
-    size_t              trackNum;
-    size_t              startTime;
-    size_t              endTime;
-    vector< size_t >    priorNode;
+    bool                    ready;
+    bool                    done;
+    size_t                  intervalID;
+    size_t                  trackNum;
+    size_t                  startTime;
+    size_t                  endTime;
+    vector< Interval* >     priorList;
 };
 
 //functional object
