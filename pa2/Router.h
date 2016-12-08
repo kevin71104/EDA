@@ -21,22 +21,33 @@ public:
     void addPriorNode(size_t Id) {priorNode.push_back(Id);}
 
 private:
-    size_t           intervalID;
-    size_t           trackNum;
-    size_t           startTime;
-    size_t           endTime;
-    vector< size_t >   overlap;
-    vector< size_t >   priorNode;
+    size_t              intervalID;
+    size_t              trackNum;
+    size_t              startTime;
+    size_t              endTime;
+    vector< size_t >    overlap;
+    vector< size_t >    priorNode;
 };
 
 class Router
 {
 public:
-    bool readNet(const string& filename);
-    void writeTrack(ostream& outfile);
+    Router():watermark(0){}
+
+    bool readNet(const string& filename) ;
+    void resetList() {
+        for(size_t i=0; i < intervalList.size(); i++)
+            delete intervalList[i];
+    }
+
+    //reporting functions
+    void printTrack() const;
+    void printChannelRouting() const;
+
+    void writeTrack(ostream& outfile) const;
 private:
-    size_t watermark;
-    vector< Interval* >       IntervalList;
+    size_t                    watermark;
+    vector< Interval* >       intervalList;
     vector< vector<int> >     trackList;
 };
 

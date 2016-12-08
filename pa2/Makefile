@@ -11,12 +11,12 @@ OBJS = $(SRC:.cpp=.o)
 
 
 ${TARGET}: ${OBJS}
-	${CC} ${CFLAGS} ${OBJS} -o $@
-	echo "compilation success..."
+	@${CC} ${CFLAGS} ${OBJS} -o $@
+	@echo "compilation success..."
 %.o: %.cpp Router.h
-	${CC} ${CFLAGS} -c $< -o $@
+	@${CC} ${CFLAGS} -c $< -o $@
 
 
 .PHONY:clean
 clean:
-	@rm -f ${OBIS} ${TARGET}
+	@rm -f ${OBJS} ${TARGET}

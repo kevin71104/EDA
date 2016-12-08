@@ -1,9 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstdlib>
+#include <cassert>
+#include <fstream>
 #include "Router.h"
 
 using namespace std;
+
+Router* router = new Router();
 
 static void
 usage()
@@ -41,6 +46,14 @@ int main(int argc, char** argv)
 {
     // -File <doFile>
     if (argc == 3) {
-
-     }
+       if (!router->readNet(argv[1])) {
+          cerr << "Error: cannot open file \"" << argv[1] << "\"!!\n";
+          myexit();
+       }
+       router->printTrack();
+       ofstream outfile(argv[2], ios::out);
+       //router->writeTrack(outfile);
+       exit(EXIT_SUCCESS);
+    }
+    else myexit();
 }
