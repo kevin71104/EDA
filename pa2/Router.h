@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <climits>
+#include <algorithm>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ public:
     void setID(size_t ID) { intervalID = ID;}
     void setTrack(size_t num) { trackNum = num;}
     void setDone() { done = true;}
+    void addTimeList(size_t times) {timeList.push_back(times);}
     void addPriorNode(Interval* priorNode) {priorList.push_back(priorNode);}
     void update() {
         ready = true;
@@ -42,6 +44,8 @@ public:
     size_t getStart() const{ return startTime;}
     size_t getEnd() const{ return endTime;}
     size_t getID() const { return intervalID;}
+    size_t getTrackNum() const { return trackNum;}
+    const vector<size_t>& getTimeList() const { return timeList;}
 
     //bool functions
     bool isReady() const { return ready;}
@@ -56,8 +60,8 @@ public:
         return flag;
     }
 
-    //reporting functions
     void printInterval() const;
+    void sortTimeList(){ ::sort(timeList.begin(),timeList.end());}
 
 private:
     mutable bool            ready;
@@ -67,6 +71,7 @@ private:
     size_t                  startTime;
     size_t                  endTime;
     IntervalList            priorList;
+    vector<size_t>          timeList;       //which time it occurs time*2 means upper time*2+1 means bottom
 };
 
 //functional object
@@ -84,9 +89,9 @@ public:
     ~Router(){ resetList();}
 
     //reporting functions
-    void printChannelRouting() const;
+    void printChannelRouting(ostream& outfile = cout) const;
     void printNet() const;
-    void printTrack(ostream& outfile) const;
+    void printTrack(ostream& outfile = cout) const;
 
     //access functions
     Interval* getInterval(size_t ID) const{
