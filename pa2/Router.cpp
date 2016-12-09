@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 #include "Router.h"
 
 using namespace std;
@@ -114,9 +115,7 @@ Router::readNet(const string& filename)
         ss >> temp;
     }
     //sort the intervalList by startTime
-    //intervals defined by upper-boundary and the new intervals defined by bottom respectively
-    ::sort(intervalList.begin(), intervalList.begin()+num_upper-1, less_start());
-    ::sort(intervalList.begin()+num_upper, intervalList.end(), less_start());
+    ::sort(intervalList.begin(), intervalList.end(), less_start());
     //update the ready & done of the nodes with no priorNodes
     for(size_t i=0; i<intervalList.size(); i++)
         intervalList[i]->update();
@@ -131,7 +130,7 @@ Router::routing()
     while(!list.empty()){
         trackNum++;
         watermark = 0;
-        IdList track;
+        IntervalList track;
         while(getTrack(list,track,trackNum)){
             for(size_t i=0; i<list.size(); i++)
                 list[i]->update();
@@ -141,7 +140,7 @@ Router::routing()
 }
 
 bool
-Router::getTrack(IntervalList& list, IdList& track, size_t trackNum)
+Router::getTrack(IntervalList& list, IntervalList& track, size_t trackNum)
 {
     bool flag = false;
     for(size_t i=0; i<list.size(); i++)
@@ -151,7 +150,7 @@ Router::getTrack(IntervalList& list, IdList& track, size_t trackNum)
                 list[i]->setTrack(trackNum);
                 list[i]->setDone();
                 watermark = list[i]->getEnd();
-                track.push_back(list[i]->getID());
+                track.push_back(list[i]);
                 list.erase( list.begin()+i );
                 break;
             }
@@ -159,31 +158,21 @@ Router::getTrack(IntervalList& list, IdList& track, size_t trackNum)
 }
 
 void
-Router::printTrack() const
-{
-    for(size_t i=0; i<trackList.size(); i++){
-        if(i != 0) cout << '\n';
-        cout << "track" << i+1 << ':' ;
-        for(size_t j=0; j<trackList[i].size(); j++)
-            cout << " i" << trackList[i][j] ;
-    }
-    cout << '\n';
-}
-void
 Router::printChannelRouting() const
 {
 
 }
 
 void
-Router::writeTrack(ostream& outfile) const
+Router::printTrack(ostream& outfile) const
 {
     for(size_t i=0; i<trackList.size(); i++){
-        if(i != 0) cout << '\n';
-        outfile << "track" << i << ':' ;
+        if(i != 0) outfile << '\n' ;
+        outfile << "Track" << i+1 << ':' ;
         for(size_t j=0; j<trackList[i].size(); j++)
-            outfile << " i" << trackList[i][j] ;
+            outfile << " i" << trackList[i][j]->getID() ;
     }
+    outfile << endl;
 }
 
 void

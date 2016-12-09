@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <algorithm>
 #include <climits>
 
 using namespace std;
@@ -85,9 +84,9 @@ public:
     ~Router(){ resetList();}
 
     //reporting functions
-    void printTrack() const;
     void printChannelRouting() const;
     void printNet() const;
+    void printTrack(ostream& outfile) const;
 
     //access functions
     Interval* getInterval(size_t ID) const{
@@ -96,22 +95,22 @@ public:
                 return intervalList[i];
     }
 
-    bool readNet(const string& filename) ;
-    void writeTrack(ostream& outfile) const;
+    //Constrained Left-Edge algorithm
     void routing();
-    void sortStartTime(){ ::sort(intervalList.begin(), intervalList.end(), less_start());}
+    bool getTrack(IntervalList& list, IntervalList& track, size_t trackNum);
+
+    bool readNet(const string& filename) ;
     void resetList() {
         for(size_t i=0; i < intervalList.size(); i++)
             delete intervalList[i];
     }
-    bool getTrack(IntervalList& list, IdList& track, size_t trackNum);
 
 private:
-    size_t              watermark;
-    IdList              upper;
-    IdList              bottom;
-    IntervalList        intervalList;
-    vector<IdList>      trackList;
+    size_t                  watermark;
+    IdList                  upper;
+    IdList                  bottom;
+    IntervalList            intervalList;
+    vector<IntervalList>    trackList;
 };
 
 #endif
