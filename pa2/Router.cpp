@@ -59,8 +59,9 @@ Router::readNet(const string& filename)
     //read first line
     getline(ifs, line);
     ss << line;
-    ss >> temp;
     while( !ss.eof() ){
+        ss >> temp;
+        if(temp == "")break;
         myStr2UInt(temp,num);
         upper.push_back(num);
         if(num != 0){
@@ -82,7 +83,7 @@ Router::readNet(const string& filename)
             }
         }
         TIME++;
-        ss >> temp;
+        temp = "";
     }
     size_t num_upper = intervalList.size();
 
@@ -93,8 +94,9 @@ Router::readNet(const string& filename)
     //read second line
     getline(ifs,line);
     ss << line;
-    ss >> temp;
     while( !ss.eof() ){
+        ss >> temp;
+        if(temp == "")break;
         myStr2UInt(temp,num);
         bottom.push_back(num);
         if(num != 0){
@@ -120,7 +122,7 @@ Router::readNet(const string& filename)
                 tempNode->addPriorNode( getInterval(upper[TIME]) );
         }
         TIME++;
-        ss >> temp;
+        temp = "";
     }
     //sort the intervalList by startTime
     ::sort(intervalList.begin(), intervalList.end(), less_start());
@@ -244,7 +246,7 @@ Router::printChannelRouting(ostream& outfile) const
 void
 Router::printTrack(ostream& outfile) const
 {
-    outfile << "Routing Results: \n";
+    //outfile << "Routing Results: \n";
     for(size_t i=0; i<trackList.size(); i++){
         if(i != 0) outfile << '\n' ;
         outfile << "Track" << i+1 << ':' ;
