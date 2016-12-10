@@ -153,6 +153,7 @@ Router::routing()
                     watermark = list[i]->getEnd();
                     track.push_back(list[i]);
                     list.erase( list.begin()+i );
+                    i--;    //keep searching start from the original next interval
                 }
         }
         trackList.push_back(track);
