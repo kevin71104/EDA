@@ -144,30 +144,19 @@ Router::routing()
         trackNum++;
         watermark = 0;
         IntervalList track;
-        while(getTrack(list,track,trackNum)){
-            for(size_t i=0; i<list.size(); i++)
-                list[i]->update();
+        for(size_t i=0; i<list.size(); i++){
+            list[i]->update();
+            if( list[i]->isReady())
+                if( watermark == 0 || (list[i]->getStart() > watermark) ){
+                    list[i]->setTrack(trackNum);
+                    list[i]->setDone();
+                    watermark = list[i]->getEnd();
+                    track.push_back(list[i]);
+                    list.erase( list.begin()+i );
+                }
         }
         trackList.push_back(track);
     }
-}
-
-bool
-Router::getTrack(IntervalList& list, IntervalList& track, size_t trackNum)
-{
-    bool flag = false;
-    for(size_t i=0; i<list.size(); i++)
-        if( list[i]->isReady())
-            if( watermark == 0 || (list[i]->getStart() > watermark) ){
-                flag = true;
-                list[i]->setTrack(trackNum);
-                list[i]->setDone();
-                watermark = list[i]->getEnd();
-                track.push_back(list[i]);
-                list.erase( list.begin()+i );
-                break;
-            }
-    return flag;
 }
 
 void

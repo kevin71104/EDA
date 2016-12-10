@@ -102,8 +102,7 @@ public:
 
     //Constrained Left-Edge algorithm
     void routing();
-    bool getTrack(IntervalList& list, IntervalList& track, size_t trackNum);
-
+    
     bool readNet(const string& filename) ;
     void resetList() {
         for(size_t i=0; i < intervalList.size(); i++)
